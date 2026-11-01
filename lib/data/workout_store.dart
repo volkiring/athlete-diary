@@ -7,6 +7,9 @@ import '../models/workout.dart';
 class WorkoutStore extends ChangeNotifier {
   final List<Workout> _workouts = [];
 
+  /// Сколько тренировок спортсмен хочет делать за неделю.
+  int _weeklyGoal = 3;
+
   /// Тренировки, отсортированные от новых к старым.
   List<Workout> get workouts {
     final sorted = [..._workouts]..sort((a, b) => b.date.compareTo(a.date));
@@ -38,4 +41,15 @@ class WorkoutStore extends ChangeNotifier {
         .subtract(Duration(days: days - 1));
     return _workouts.where((w) => !w.date.isBefore(from)).length;
   }
+
+  int get weeklyGoal => _weeklyGoal;
+
+  void setWeeklyGoal(int goal) {
+    _weeklyGoal = goal;
+    notifyListeners();
+  }
+
+  /// Доля выполнения недельной цели от 0 до 1.
+  double goalProgress({DateTime? now}) =>
+      (countLastDays(7, now: now) / _weeklyGoal).clamp(0.0, 1.0);
 }

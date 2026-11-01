@@ -33,6 +33,7 @@ class HomeScreen extends StatelessWidget {
           return Column(
             children: [
               _StatsCard(store: store),
+              _GoalCard(store: store),
               Expanded(
                 child: workouts.isEmpty
                     ? const Center(
@@ -78,6 +79,51 @@ class _StatsCard extends StatelessWidget {
                 value: store.totalDistanceKm.toStringAsFixed(1)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _GoalCard extends StatelessWidget {
+  const _GoalCard({required this.store});
+
+  final WorkoutStore store;
+
+  Future<void> _editGoal(BuildContext context) async {
+    final goal = await showDialog<int>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Тренировок в неделю'),
+        children: [
+          for (var i = 1; i <= 7; i++)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, i),
+              child: Text('$i', style: const TextStyle(fontSize: 18)),
+            ),
+        ],
+      ),
+    );
+    if (goal != null) store.setWeeklyGoal(goal);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final done = store.countLastDays(7);
+    final reached = done >= store.weeklyGoal;
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      child: ListTile(
+        onTap: () => _editGoal(context),
+        leading: Icon(reached ? Icons.emoji_events : Icons.flag_outlined,
+            color: reached ? Colors.amber : null),
+        title: Text(reached
+            ? 'Цель на неделю выполнена!'
+            : 'Цель на неделю: $done из ${store.weeklyGoal}'),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: LinearProgressIndicator(value: store.goalProgress()),
+        ),
+        trailing: const Icon(Icons.edit_outlined),
       ),
     );
   }

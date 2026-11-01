@@ -61,7 +61,7 @@ class _AddWorkoutScreenState extends State<AddWorkoutScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             DropdownButtonFormField<WorkoutType>(
-              value: _type,
+              initialValue: _type,
               decoration: const InputDecoration(labelText: 'Вид тренировки'),
               items: [
                 for (final t in WorkoutType.values)

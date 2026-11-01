@@ -42,6 +42,18 @@ void main() {
     expect(store.countLastDays(7, now: now), 2);
   });
 
+  test('прогресс недельной цели не больше 100%', () {
+    final now = DateTime(2026, 10, 25, 18);
+    final store = WorkoutStore()
+      ..add(_workout('a', DateTime(2026, 10, 24)))
+      ..add(_workout('b', DateTime(2026, 10, 25)));
+
+    expect(store.weeklyGoal, 3);
+    expect(store.goalProgress(now: now), closeTo(2 / 3, 0.001));
+    store.setWeeklyGoal(1);
+    expect(store.goalProgress(now: now), 1.0);
+  });
+
   test('темп считается только при наличии дистанции', () {
     expect(_workout('1', DateTime(2026), minutes: 50, km: 10).paceMinPerKm, 5);
     expect(_workout('2', DateTime(2026)).paceMinPerKm, isNull);
